@@ -1,0 +1,621 @@
+@unocss all;
+
+/* 2026-11-02：HarmonyOS-Sans 改为分片加载，@font-face + unicode-range 见 fonts.css（header.php 引入）。
+   浏览器按页面用字按需下载对应分片，新增任意汉字自动命中，无需再维护子集。
+   完整字体保留在 assets/fonts/HarmonyOS-Sans.full.woff2（重跑 tools/slice_font.py 可重新分片）。 */
+
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes grow {
+    0% {
+        background-size: 100% 100%;
+    }
+
+    100% {
+        background-size: 150% 150%;
+    }
+}
+
+@keyframes grow {
+    0% {
+        background-size: 100% 100%;
+    }
+
+    100% {
+        background-size: 150% 150%;
+    }
+}
+
+@media screen and (max-width: 800px) {
+
+    input,
+    textarea,
+    .ivu-select {
+        font-size: 16px !important;
+    }
+}
+
+/* 隐藏视频的默认控制栏 */
+/* video::-webkit-media-controls {
+    display:none !important;
+} */
+
+.rotate-animation {
+    animation: rotate 5s linear infinite;
+}
+
+.text-color-link {
+    color: #576b95;
+}
+
+.bg-color-primary {
+    background-color: #f7f7f7;
+}
+
+* {
+    font-family: 'HarmonyOS-Sans', '微软雅黑', "Microsoft Yahei";
+}
+
+/* ===== 光标与可访问性修正（2026-10-19）=====
+   原先 *{cursor:default} 让所有链接、按钮都失去手型光标，用户看不出哪里可点，
+   只能靠逐个元素补 cursor-pointer 兜底（漏掉的地方就彻底没有提示）。
+   现改为：默认继承浏览器行为，只对可交互元素显式给出 pointer。 */
+a:any-link,
+button,
+summary,
+label[for],
+[role="button"],
+.cursor-pointer {
+    cursor: pointer;
+}
+
+button:disabled,
+a:not([href]),
+.cursor-default {
+    cursor: default;
+}
+
+/* 键盘用户焦点可见（原样式没有任何 focus 指示） */
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+    outline: 2px solid #07c160;
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+
+/* 2026-10-21：输入类控件不再用 2px 实线绿框（发布页截图里像"报错框"）。
+   改为细边 + 外扩柔光，键盘可达性保留，视觉上不再抢眼。 */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 1px solid rgba(7, 193, 96, .55);
+    outline-offset: 0;
+    border-color: #07c160;
+    box-shadow: 0 0 0 3px rgba(7, 193, 96, .13);
+}
+
+/* 对比度修正：UnoCSS 的 .text-gray 是 #9CA3AF，在白底仅 2.6:1，
+   达不到 WCAG AA 的 4.5:1（时间戳、分类等 12px 小字全部受影响）。 */
+.text-gray {
+    color: #6b7280;
+}
+
+.dark .text-gray,
+body.dark .text-gray {
+    color: #9ca3af;
+}
+
+/* 页脚版权 / ICP 备案号原本用 .text-gray-300，在 #f0f0f0 底上仅 1.5:1，几乎不可见 */
+.side-area .text-gray-300,
+.side-area a.text-gray-300 {
+    color: #6b7280 !important;
+}
+
+.dark .side-area .text-gray-300,
+.dark .side-area a.text-gray-300,
+body.dark .side-area .text-gray-300,
+body.dark .side-area a.text-gray-300 {
+    color: #9ca3af !important;
+}
+
+/* 仅供读屏器与搜索引擎识别的隐藏标题 */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+body {
+    cursor: default;
+    margin: 0;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    font-family: 'HarmonyOS-Sans', '微软雅黑', "Microsoft Yahei";
+}
+
+input::placeholder {
+    color: #c6c6c6;
+}
+
+.hudong {
+    width: 100%;
+    height: 100%;
+    background-image: url('../svgs/post.fun.ico.light.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: #f7f7f7;
+    cursor: pointer;
+    color: transparent;
+}
+
+.ico-back {
+    width: 20px;
+    height: 20px;
+    background-image: url('../svgs/post.top.back.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent;
+    cursor: pointer;
+    color: transparent;
+}
+
+.hudong:hover {
+    background-color: #dedede;
+}
+
+.like {
+    width: 18px;
+    height: 18px;
+    background-image: url('../svgs/post.aside.like.light.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+    color: transparent;
+}
+
+.like-user {
+    color: #576b95;
+    transition: opacity 0.2s;
+}
+.like-user:hover {
+    opacity: 0.8;
+}
+.dark .like-user {
+    color: #8c9cb8;
+}
+
+.unlike {
+    width: 18px;
+    height: 18px;
+    background-image: url('../svgs/post.aside.like.light.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+    color: transparent;
+}
+
+.hudong-container {
+    width: 120px;
+    border-radius: 5px;
+}
+
+.hudong-like {
+    width: 18px;
+    height: 18px;
+    background-image: url('../svgs/post.fun.btn.like.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    color: transparent;
+}
+
+.hudong-liked {
+    width: 18px;
+    height: 18px;
+    background-image: url('../svgs/post.fun.btn.liked.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    color: transparent;
+}
+
+.hudong-comment {
+    width: 18px;
+    height: 18px;
+    background-image: url('../svgs/post.fun.btn.comment.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    color: transparent;
+}
+
+.face {
+    width: 18px;
+    height: 18px;
+    background-image: url('../svgs/post.comment.face.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    color: transparent;
+}
+
+.face-dark {
+    width: 18px;
+    height: 18px;
+    background-image: url('../svgs/post.comment.face.dark.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    color: transparent;
+}
+
+.article-content a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    color: #111111;
+}
+
+.dark .article-content a {
+    color: #cccccc;
+}
+
+.article-content a:hover {
+    cursor: pointer;
+}
+
+.article-content img {
+    max-width: 100%;
+}
+
+.article-content>p {
+    margin: 0;
+}
+
+/* 2026-10-23：正文阅读字号 14 → 15px（首页动态与文章内页统一），行高放宽到 1.72 提升可读性。
+   style.css 在 uno.css 之前加载，所以用 body 前缀抬高特异性，才能压过标记里的 text-[14px]。 */
+body .article-content,
+body .article-content p,
+body .article-content li,
+body .article-content blockquote,
+body .article-content td {
+    font-size: 15px;
+    line-height: 1.72;
+}
+
+/* 「全文 / 收起」跟随正文一起放大，避免正文变大后按钮显得过小 */
+body .qw,
+body .ss {
+    font-size: 15px;
+}
+
+/* 2026-10-23：音乐悬浮播放器默认位置——垂直从 200px（top-50）上移到 96px（top-24），
+   落在 Banner 右侧中上部（图二效果），不再压住头像。
+   uno.css 未编译 top-24，这里用 ID 规则兜底（特异性高于类，与加载顺序无关）；
+   用户手动拖动后 jQuery UI 写入的内联 top 仍会覆盖本值，拖动功能不受影响。 */
+#music-modal {
+    top: 6rem;
+}
+
+/* 2026-10-23：电脑端（宽屏）Banner 更高，悬浮框随图一效果下移到 Banner 中上部（约150px）；
+   手机端维持 6rem（96px）不变。 */
+@media screen and (min-width: 768px) {
+    #music-modal {
+        top: 9.375rem;
+    }
+}
+
+.article-content>ul {
+    margin: 0;
+}
+
+.article-content pre>code {
+    text-wrap: wrap;
+}
+
+.multi-pictures {
+    width: calc(100% - 45px);
+}
+
+.scrollload-bottom {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 12px;
+    color: #333;
+}
+
+.dark .scrollload-bottom {
+    color: #cccccc;
+}
+
+.comment-waiting {
+    font-size: 12px;
+    background-color: #e6e6e6;
+    color: #999;
+}
+
+.friend-container {
+    width: 32rem;
+    max-height: 50%;
+}
+
+/* WebKit 浏览器滚动条样式 */
+.friend-container::-webkit-scrollbar {
+    width: 12px;
+    /* 设置滚动条宽度 */
+}
+
+.friend-container::-webkit-scrollbar-track {
+    background: #f2f2f2;
+    /* 设置滚动条轨道颜色 */
+}
+
+.friend-container::-webkit-scrollbar-thumb {
+    background: #888;
+    /* 设置滚动条滑块颜色 */
+}
+
+.friend-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+    /* 设置鼠标悬停在滚动条滑块上时的颜色 */
+}
+
+@media screen and (min-width: 567px) {
+    .main-container {
+        max-width: 567px;
+    }
+
+    .top-container {
+        max-width: 567px;
+    }
+
+    .side-area {
+        display: block;
+    }
+
+    .music-card {
+        height: 80px;
+        width: 66.66%;
+    }
+
+    .music-card-text {
+        font-size: 15px;
+        width: 160px;
+    }
+
+    .music-card-play-position {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+    }
+}
+
+@media screen and (max-width: 567px) {
+    .main-container {
+        width: 100%;
+        min-width: 300px;
+    }
+
+    .top-container {
+        width: 100%;
+        min-width: 300px;
+    }
+
+    .side-area-left {
+        display: none;
+    }
+
+    .side-area {
+        /*display: none;*/
+        right: 1rem;
+        bottom: 2rem;
+    }
+
+    .friend-container {
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
+    }
+
+    .side-area>div {
+        width: 32px;
+        height: 32px;
+    }
+
+    .side-area svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .music-card {
+        height: 60px;
+        width: 75%;
+    }
+
+    .music-card-text {
+        font-size: 12px;
+        width: 100px;
+    }
+
+    .music-card-play-position {
+        position: absolute;
+        right: 12px;
+        top: 12px;
+    }
+}
+/* ===== 右下角浮动按钮组防遮挡优化（2026-10-16）=====
+   1. 顶部导航已有日历按钮，浮动组中的日历按钮已移除（components/footer.php）；
+   2. icefox.js 会在下滑时给浮动组加 .side-area-hidden（淡出下移、不响应点击），
+      上滑时恢复，避免盖住动态卡片底部的点赞/评论按钮；
+   3. 窄屏（≤567px）下浮动组保持右侧，但抬离底部约 160px（约一屏 1/5），
+      避开卡片底部的点赞/评论操作区，也不再遮挡左侧头像列。 */
+.side-area {
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.side-area.side-area-hidden {
+    opacity: 0;
+    transform: translateY(16px);
+    pointer-events: none;
+}
+
+@media screen and (max-width: 567px) {
+    /* 覆盖上方移动端规则里的 bottom:2rem，抬到约一屏 1/5 处；如需微调改 bottom 值即可 */
+    .side-area {
+        left: auto;
+        right: 1rem;
+        bottom: 10rem;
+    }
+}
+
+/* ===== 视频卡片：横版海报态 / 播放态自适应（2026-11-01 重写） ===== */
+/* 未播放：固定 16:9 横版窗口，视频首帧按 cover 裁切（等同横版截图）
+   播放后：加 .is-live，窗口改为视频真实宽高比、最高 75vh
+   暂停不还原；刷新或重新进入页面（含 PJAX 换页）DOM 重建，自动回到海报态 */
+.video-shell { position: relative; background: #000; --plyr-color-main: #dcdfe5; }
+/* Plyr 自带 min-width:200px，极窄视频（超长竖屏限高后）会撑破容器，这里放开 */
+.video-shell .plyr { min-width: 0; }
+.video-shell:not(.is-live) {
+    height: 0;
+    padding-bottom: 56.25%;
+    overflow: hidden;
+}
+.video-shell:not(.is-live) > video,
+.video-shell:not(.is-live) .plyr {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+.video-shell:not(.is-live) .plyr__video-wrapper { height: 100%; width: 100%; }
+.video-shell:not(.is-live) video { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+.video-shell.is-live {
+    width: var(--stage-w, 100%);
+    height: var(--stage-h, auto);
+    margin-left: auto;
+    margin-right: auto;
+}
+.video-shell.is-live .plyr,
+.video-shell.is-live .plyr__video-wrapper { height: 100%; width: 100%; }
+.video-shell.is-live video { width: 100%; height: 100%; object-fit: contain; }
+.video-shell.has-ambient::before {
+    content: "";
+    position: absolute;
+    inset: -8%;
+    z-index: 0;
+    background-image: var(--ambient-img, none);
+    background-size: cover;
+    background-position: center;
+    filter: blur(22px) brightness(.72) saturate(1.08);
+}
+
+/* ============================================================
+   2026-11-02：PJAX 页面切换过渡（点文章进入 / 返回列表不再"硬切"）
+   - 新内容淡入 + 多段 Q 弹：浮起(30px)→过冲(-7px/1.018)→回缩(+4px/0.994)→微弹(-2px)→落定，与弹窗 authModalPop 同款手感
+   - 只动 .article-container：内部没有 position:fixed 元素，
+     而顶栏 #top-fixed 是 fixed 定位且位于 .main-container 内，
+     若在 #pjax-container / .main-container 上加 transform 会改变其定位参照 → 顶栏跳位
+   - 动画类由 icefox.js 在换页后添加，动画结束自动移除，不留 transform 残留
+   ============================================================ */
+@keyframes pjaxContentIn {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    38% {
+        opacity: 1;
+        transform: translateY(-7px) scale(1.018);
+    }
+    60% {
+        transform: translateY(4px) scale(0.994);
+    }
+    78% {
+        transform: translateY(-2px) scale(1.003);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+#pjax-container.pjax-entering .article-container {
+    animation: pjaxContentIn 0.72s cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #pjax-container.pjax-entering .article-container {
+        animation: none;
+    }
+}
+
+/* 2026-11-05：置顶/广告徽标改为演示站样式（取色自演示站截图：#eb5548，圆角矩形） */
+.badge-pill {
+    display: inline-block;
+    font-size: 12px;
+    line-height: 1;
+    padding: 3px 7px;
+    border-radius: 3px;
+}
+.badge-pill--pin {
+    color: #eb5548;
+    border: 1px solid #eb5548;
+    background-color: #fff;
+}
+body.dark .badge-pill--pin {
+    background-color: transparent;
+}
+.badge-pill--ad {
+    color: #fff;
+    background-color: #eb5548;
+    border: 1px solid #eb5548;
+}
+/* 2026-11-05：「作者」标记 —— 严格按原版样式（text-xs + 1px 边框 + rounded + 左右 1px 内边距），
+   仅把颜色从暗红 rgb(185,28,28) 换成主题红 #eb5548；
+   原版 uno.css 预编译缺 border-width/pl-[1px] 类导致边框从未显示，这里用等效原生 CSS 补齐原版应有的样子 */
+.badge-author {
+    color: #eb5548;
+    border: 1px solid #eb5548;
+    border-radius: 0.25rem;
+    padding-left: 1px;
+    padding-right: 1px;
+}
+
+/* 2026-11-05：登录/注册弹窗底部版权条（版权与备案自页面左下角移入） */
+.auth-modal-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 4px 10px;
+    padding: 10px 16px 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    font-size: 11px;
+    line-height: 1.4;
+    color: #b9bdc6;
+}
+.auth-modal-footer a {
+    color: #9aa0ab;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+.auth-modal-footer a:hover {
+    color: #eb5548;
+}
+body.dark .auth-modal-footer {
+    border-top-color: rgba(255, 255, 255, 0.08);
+    color: #6b7280;
+}
+body.dark .auth-modal-footer a {
+    color: #8a919e;
+}
