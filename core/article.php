@@ -1,6 +1,82 @@
 <?php
 
 /**
+ * 生成文章/独立页面链接（兼容 Typecho 1.2 与 1.3）
+ *
+ * Typecho 1.3 起 Contents::filter() 不再向列表数据注入 permalink / url / pathinfo，
+ * 列表页直接读 $item['permalink'] 会报 Undefined property 并输出空链接（首页文章点不动）。
+ * 这里按当前路由表自行拼链接：行里已有 permalink 就直接用，1.2 行为完全不变。
+ *
+ * @param array|object $row 内容行（含 cid、slug、created、type 等字段）
+ * @return string
+ */
+function icefoxPostPermalink($row): string
+{
+    $options = Helper::options();
+    $data = is_object($row) ? get_object_vars($row) : (array) $row;
+
+    if (!empty($data['permalink'])) {
+        return $data['permalink'];
+    }
+    if (!empty($data['pathinfo'])) {
+        return Typecho_Common::url($data['pathinfo'], $options->index);
+    }
+
+    $type = !empty($data['type']) ? $data['type'] : 'post';
+    $route = Typecho_Router::get($type);
+    if (empty($route) || empty($route['params'])) {
+        return $options->index;
+    }
+
+    $created = !empty($data['created']) ? (int) $data['created'] : time();
+    $params = [];
+    foreach ($route['params'] as $param) {
+        switch ($param) {
+            case 'cid':
+                $params[$param] = isset($data['cid']) ? $data['cid'] : 0;
+                break;
+            case 'slug':
+                $params[$param] = isset($data['slug']) ? urlencode($data['slug']) : '';
+                break;
+            case 'type':
+                $params[$param] = $type;
+                break;
+            case 'year':
+                $params[$param] = date('Y', $created);
+                break;
+            case 'month':
+                $params[$param] = date('m', $created);
+                break;
+            case 'day':
+                $params[$param] = date('d', $created);
+                break;
+            default:
+                $params[$param] = '';
+        }
+    }
+
+    // 永久链接里带分类时才补查一次（只有「分类型」链接格式会走到，默认的 /archives/{cid}/ 不查库）
+    if (isset($params['category']) || isset($params['directory'])) {
+        $db = Typecho_Db::get();
+        $cat = $db->fetchRow($db->select('m.slug')->from('table.metas as m')
+            ->join('table.relationships as r', 'r.mid = m.mid', Typecho_Db::LEFT_JOIN)
+            ->where('r.cid = ?', isset($data['cid']) ? $data['cid'] : 0)
+            ->where('m.type = ?', 'category')
+            ->order('m.order', Typecho_Db::SORT_ASC)
+            ->limit(1));
+        $catSlug = !empty($cat['slug']) ? urlencode($cat['slug']) : '';
+        if (isset($params['category'])) {
+            $params['category'] = $catSlug;
+        }
+        if (isset($params['directory'])) {
+            $params['directory'] = $catSlug;
+        }
+    }
+
+    return Typecho_Router::url($type, $params, $options->index);
+}
+
+/**
  * 根据文章id获取最新文章列表
  * @throws Exception
  */
@@ -170,7 +246,7 @@ function getFilteredPostsData(int $year, int $month = 0, int $page = 1, int $pag
     $postList = [];
     $options = Helper::options();
     foreach ($rawPosts as $raw) {
-        $raw['permalink'] = Typecho_Router::url('post', $raw, $options->index);
+        $raw['permalink'] = icefoxPostPermalink($raw);
         $postList[] = (object)$raw;
     }
 
