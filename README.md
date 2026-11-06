@@ -28,7 +28,7 @@
 
 | 项目 | 要求 |
 | --- | --- |
-| Typecho | **1.2.0 及以上**（使用了 `Typecho\Common` 命名空间） |
+| Typecho | **1.3.0**（使用了 `Typecho\Common` 命名空间） |
 | PHP | **7.2+**，推荐 7.4 / 8.0 / 8.1 |
 | 数据库 | MySQL 5.6+ / MariaDB / SQLite 均可 |
 | 伪静态 | 可选。未开启时接口会自动改用 `?api=xxx` 形式，功能不受影响 |
