@@ -118,6 +118,10 @@ if ($isDateFiltered) {
 <?php foreach ($postStack as $itemArr) : ?>
     <?php
     $item = (object) $itemArr;
+    // Typecho 1.3 起列表行不再带 permalink，缺失时自行生成（1.2 有值则直接沿用）
+    if (empty($item->permalink)) {
+        $item->permalink = icefoxPostPermalink($itemArr);
+    }
     // 非筛选模式下排除置顶文章（置顶文章在 post-list-top 单独渲染）
     if (!$isDateFiltered && in_array($item->cid, $topCids)) {
         continue;
