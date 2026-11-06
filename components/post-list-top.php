@@ -24,7 +24,7 @@ $topCids = array_filter(explode('||', $this->options->topPost));
 
 foreach ($topCids as $cid): ?>
     <?php $this->widget('Widget_Archive@icefox' . $cid, 'pageSize=1&type=post', 'cid=' . $cid)->to($item); ?>
-    <?php $item = (object) $item; ?>
+    <?php /* 不要转成 (object)：保留 Widget 对象才能拿到 1.3 的 ___permalink 魔术属性；1.2 下 row 里本来就有 permalink */ ?>
     <article class="flex flex-row border-b border-b-2 dark:border-gray-800 border-gray-200 pt-5 pl-5 pr-5">
         <div class="mr-3">
             <div class="w-9 h-9">
